@@ -10,6 +10,7 @@ const port = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use("/api/users", require("./routes/userRoutes"));
+app.use("/api/tweets", require("./routes/tweetRoutes"));
 app.use(errorHandler);
 
 app.listen(port, () => {

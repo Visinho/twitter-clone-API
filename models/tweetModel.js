@@ -17,7 +17,16 @@ const tweetSchema = mongoose.Schema({
     tweet: {
         type: String,
         required: [true, "Please add your tweet"],
-    }
+    },
+    comments: [
+        {
+            comment: String,
+            postedBy: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User"
+            }
+        }
+    ]
 },{
     timestamps: true,
 });

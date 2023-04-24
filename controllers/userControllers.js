@@ -18,6 +18,12 @@ const registerUser = asyncHandler(async (req, res, next) => {
         res.status(400);
         throw new Error("User already exists")
     }
+     //Generate Strong Password
+     const passwordRegex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+     if(!passwordRegex.test(password)){
+         res.status(400);
+         throw new Error("Password must contain at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long.")
+     }
     //Hash Password
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({

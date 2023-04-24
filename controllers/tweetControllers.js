@@ -1,20 +1,18 @@
 const asyncHandler = require("express-async-handler");
 const Tweet = require("../models/tweetModel");
 
-//Get all contacts
-//@routes GET /api/contacts
-//access private
+//Get all tweets
 const getTweets = asyncHandler(async (req, res) => {
-    const tweets = await Tweet.find({ user_id: req.user.id});
+    const tweets = await Tweet.find({ 
+        user_id: req.user.id,
+    });
     console.log(tweets)
     res.status(200).json(tweets);
 });
 
-//Get a contact
-//@routes GET /api/contacts/:id
-//access private
+//Get a tweet
 const getTweet = asyncHandler(async (req, res) => {
-    const tweet = await Contact.findById(req.params.id);
+    const tweet = await Tweet.findById(req.params.id);
     if(!tweet){
         res.status(404);
         throw new Error("Tweet not found");
@@ -22,25 +20,21 @@ const getTweet = asyncHandler(async (req, res) => {
     res.status(200).json(tweet);
 });
 
-//Create new contact
-//@routes POST /api/contacts
-//access private
+//Create new tweet
 const createTweet = asyncHandler(async (req, res) => {
     console.log(req.body);
-    const {name, email} = req.body;
-    if(!name || !email){
+    const {name, email, tweet} = req.body;
+    if(!name || !email || !tweet){
         res.status(400);
         throw new Error("All fields are mandatory");
     }
-    const tweet = await Tweet.create({
+    const createTweet = await Tweet.create({
         name, email, tweet, user_id: req.user.id
     });
     res.status(201).json(tweet)
 });
 
-//Update a contact
-//@routes PUT /api/contacts/:id
-//access private
+//Update a tweet
 const updateTweet = asyncHandler(async (req, res) => {
     const tweet = await Tweet.findById(req.params.id);
     if(!tweet){
@@ -59,9 +53,7 @@ const updateTweet = asyncHandler(async (req, res) => {
     res.status(200).json(updatedTweet);
 });
 
-//Delete a contact
-//@routes POST /api/contacts/:id
-//access private
+//Delete a tweet
 const deleteTweet = asyncHandler(async (req, res) => {
     const tweet = await Tweet.findById(req.params.id);
     if(!tweet){
@@ -76,4 +68,56 @@ const deleteTweet = asyncHandler(async (req, res) => {
     res.status(200).json("Deleted");
 });
 
-module.exports = {getTweets, getTweet, createTweet, updateTweet, deleteTweet};
+//Create a comment
+const comment = asyncHandler(async (req,res) => {
+    let comment = req.body
+    comment.postedBy = req.user.id
+
+    Tweet.findByIdAndUpdate(
+        req.params.id,
+        {$push: { comments: comment }},
+        { new: true }
+    )
+    
+    .populate("comments.postedBy", "_id name")
+    .populate("postedBy", "_id name")
+
+    .exec((err, result) => {
+        if(err) {
+            return res.status(400).json({
+                error: err
+            });
+        }else{
+            res.json(result);
+        }
+    }
+    )
+})
+
+//Create a comment
+const uncomment = asyncHandler(async (req,res) => {
+    let comment = req.body
+
+    Tweet.findByIdAndUpdate(
+        req.params.id,
+        {$pull: { comments: {_id: comment._id} }},
+        { new: true }
+    )
+    
+    .populate("comments.postedBy", "_id name")
+    .populate("postedBy", "_id name")
+
+    .exec((err, result) => {
+        if(err) {
+            return res.status(400).json({
+                error: err
+            });
+        }else{
+            res.json(result);
+        }
+    }
+    )
+})
+
+
+module.exports = {getTweets, getTweet, createTweet, updateTweet, deleteTweet, comment, uncomment};
