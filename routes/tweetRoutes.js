@@ -7,9 +7,8 @@ router.use(validateToken);
 router.route("/").get(getTweets).post(createTweet);
 router.route("/:id").get(getTweet).put(updateTweet).delete(deleteTweet);
 
-router.route("/comment/:id").put(comment)
-router.route("/uncomment/:id").put(uncomment);
-
+router.route("/comment/user/:userId/tweet/:id").put(comment)
+router.route("/uncomment/:tweetId/:commentId").put(uncomment);
 
 
 
