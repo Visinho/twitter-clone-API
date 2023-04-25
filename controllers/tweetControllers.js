@@ -9,9 +9,9 @@ const getTweets = asyncHandler(async (req, res) => {
       });
       console.log(tweets);
       res.status(200).json(tweets);
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).json({ error: "Server Error" });
+    } catch (error) {
+      console.error(error.message);
+      res.status(error?.status || 500).json({ error: {message: error?.message || "Server Error"} });
     }
   });
 
@@ -23,9 +23,9 @@ const getTweet = asyncHandler(async (req, res) => {
         return res.status(404).json({ error: "Tweet not found" });
       }
       res.status(200).json(tweet);
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).json({ error: "Server Error" });
+    } catch (error) {
+      console.error(error.message);
+      res.status(error?.status || 500).json({ error: {message: error?.message || "Server Error"} });
     }
   });
 
@@ -43,9 +43,9 @@ const createTweet = asyncHandler(async (req, res) => {
         user_id: req.user.id,
       });
       res.status(201).json(createdTweet);
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).json({ error: "Server Error" });
+    } catch (error) {
+      console.error(error.message);
+      res.status(error?.status || 500).json({ error: {message: error?.message || "Server Error"} });
     }
   });
 
@@ -69,9 +69,9 @@ const updateTweet = asyncHandler(async (req, res) => {
         { new: true }
       );
       res.status(200).json(updatedTweet);
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).json({ error: "Server Error" });
+    } catch (error) {
+      console.error(error.message);
+      res.status(error?.status || 500).json({ error: {message: error?.message || "Server Error"} });
     }
   });
 
@@ -90,7 +90,7 @@ const deleteTweet = asyncHandler(async (req, res) => {
       await Tweet.deleteOne({_id: req.params.id});
       res.status(200).json("Deleted");
     } catch (error) {
-      res.status(500).json({ message: error.message });
+        res.status(error?.status || 500).json({ error: {message: error?.message || "Server Error"} });
     }
   });
 
@@ -113,9 +113,9 @@ const comment = asyncHandler(async (req, res) => {
       }
   
       res.status(201).json(updatedTweet);
-    } catch (err) {
+    } catch (error) {
       console.error(err.message);
-      res.status(500).json({ error: "Server Error" });
+      res.status(error?.status || 500).json({ error: {message: error?.message || "Server Error"} });
     }
   });
 
@@ -137,9 +137,9 @@ const uncomment = asyncHandler(async (req, res) => {
       }
   
       res.status(200).json(updatedTweet);
-    } catch (err) {
+    } catch (error) {
       console.error(err.message);
-      res.status(500).json({ error: "Server Error" });
+      res.status(error?.status || 500).json({ error: {message: error?.message || "Server Error"} });
     }
   });
 
